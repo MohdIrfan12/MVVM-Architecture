@@ -1,41 +1,29 @@
 package com.mia.mvvvmcarchitecture.questions
 
+import com.mia.mvvmarchitecture.networking.question.FetchQuestionDetailEndpoint
 import com.mia.mvvvmcarchitecture.common.observer.BaseObservable
-import com.mia.mvvvmcarchitecture.networking.question.QuestionDetailSchema
 import com.mia.mvvvmcarchitecture.networking.question.QuestionSchema
-import com.mia.mvvvmcarchitecture.networking.StackoverflowApi
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-
 
 /**
  * Created by Mohd Irfan on 31/12/20.
  *
  */
-class FetchQuestionDetailUseCase(private val mStackoverflowApi: StackoverflowApi) :
-    BaseObservable<FetchQuestionDetailUseCase.FetchQuestionDetailUseCaseListener>() {
+class FetchQuestionDetailUseCase(private val mFetchQuestionDetailEndpoint: FetchQuestionDetailEndpoint) :
+    BaseObservable<FetchQuestionDetailUseCase.Listener>() {
 
-    interface FetchQuestionDetailUseCaseListener {
+    interface Listener {
         fun onQuestionDetailFetched(questionDetail: QuestionDetail)
         fun onQuestionDetailFetchFailed()
     }
 
     fun fetchQuestionDetailAndNotify(questionId: String?) {
-        mStackoverflowApi.fetchQuestionDetails(questionId)
-            .enqueue(object : Callback<QuestionDetailSchema> {
-                override fun onResponse(
-                    call: Call<QuestionDetailSchema>,
-                    response: Response<QuestionDetailSchema>
-                ) {
-                    if (response.isSuccessful) {
-                        notifySucess(response.body()?.getQuestion())
-                    } else {
-                        notifyFailure()
-                    }
+        mFetchQuestionDetailEndpoint.fetchQuestions(questionId,
+            object : FetchQuestionDetailEndpoint.Listener {
+                override fun onQuestionDetailFetched(questionSchema: QuestionSchema?) {
+                    notifySucess(questionSchema)
                 }
 
-                override fun onFailure(call: Call<QuestionDetailSchema>, t: Throwable) {
+                override fun onQuestionDetailFetchFailed() {
                     notifyFailure()
                 }
             })

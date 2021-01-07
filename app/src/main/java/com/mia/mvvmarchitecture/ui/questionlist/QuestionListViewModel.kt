@@ -4,20 +4,18 @@ import androidx.lifecycle.ViewModel
 import com.mia.mvvmarchitecture.ui.questionlist.QuestionListViewModelObserver
 import com.mia.mvvvmcarchitecture.common.eventbus.BusDialogButtonClickEvent
 import com.mia.mvvvmcarchitecture.common.eventbus.EventBus
-import com.mia.mvvvmcarchitecture.networking.StackoverflowApi
 import com.mia.mvvvmcarchitecture.questions.FetchQuestionsListUseCase
 import com.mia.mvvvmcarchitecture.questions.Question
-import java.util.*
 
 /**
  * Created by Mohd Irfan on 31/12/20.
  *
  */
 class QuestionListViewModel(
-    mStackoverflowApi: StackoverflowApi,
+    private val mFetchQuestionsListUseCase: FetchQuestionsListUseCase,
     private val mEventBus: EventBus
 ) : ViewModel(),
-    FetchQuestionsListUseCase.FetchQuestionsListUseCaseListener,
+    FetchQuestionsListUseCase.Listener,
     EventBus.EventBusListener {
 
     internal enum class ScreenState {
@@ -25,11 +23,9 @@ class QuestionListViewModel(
     }
 
     private var mScreenState: ScreenState? = ScreenState.IDLE
-    private val mFetchQuestionsListUseCase: FetchQuestionsListUseCase
     private var mQuestionListViewModelObserver: QuestionListViewModelObserver? = null
 
     init {
-        mFetchQuestionsListUseCase = FetchQuestionsListUseCase(mStackoverflowApi)
         mFetchQuestionsListUseCase.addObserver(this)
     }
 
@@ -55,16 +51,17 @@ class QuestionListViewModel(
         mFetchQuestionsListUseCase.fetchQuestionListAndNotify()
     }
 
-    override fun onQuestionsListFetched(questions: ArrayList<Question>) {
-        mScreenState = ScreenState.QUESTION_DETAILS_SHOWN
-        mQuestionListViewModelObserver?.onHideProgressBarEvent();
-        mQuestionListViewModelObserver?.onQuestionFetchedEvent(questions)
-    }
 
-    override fun onQuestionDetailFetchFailed() {
+    override fun onQuestionsFetchFailed() {
         mScreenState = ScreenState.NETWORK_ERROR
         mQuestionListViewModelObserver?.onHideProgressBarEvent();
         mQuestionListViewModelObserver?.onQuestionFetchFailedEvent();
+    }
+
+    override fun onQuestionsListFetched(questions: List<Question>) {
+        mScreenState = ScreenState.QUESTION_DETAILS_SHOWN
+        mQuestionListViewModelObserver?.onHideProgressBarEvent();
+        mQuestionListViewModelObserver?.onQuestionFetchedEvent(questions)
     }
 
     override fun onEvent(event: Any) {

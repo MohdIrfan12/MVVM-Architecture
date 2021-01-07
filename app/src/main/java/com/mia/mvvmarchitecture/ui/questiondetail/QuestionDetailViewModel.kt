@@ -3,7 +3,6 @@ package com.mia.mvvvmcarchitecture.ui.questionlist
 
 import androidx.lifecycle.ViewModel
 import com.mia.mvvmarchitecture.ui.questiondetail.QuestionDetailViewModelObserver
-import com.mia.mvvvmcarchitecture.networking.StackoverflowApi
 import com.mia.mvvvmcarchitecture.questions.FetchQuestionDetailUseCase
 import com.mia.mvvvmcarchitecture.questions.QuestionDetail
 import com.mia.mvvvmcarchitecture.ui.common.controllers.BackPressDispatcher
@@ -13,24 +12,18 @@ import com.mia.mvvvmcarchitecture.ui.common.controllers.BackPressListener
  * Created by Mohd Irfan on 31/12/20.
  *
  */
-class QuestionDetailViewModel : ViewModel,
-    FetchQuestionDetailUseCase.FetchQuestionDetailUseCaseListener,
+class QuestionDetailViewModel(
+    private val mFetchQuestionDetailUseCase: FetchQuestionDetailUseCase,
+    private var mBackPressDispatcher: BackPressDispatcher
+
+) : ViewModel(),
+    FetchQuestionDetailUseCase.Listener,
     BackPressListener {
 
-
-    private var mFetchQuestionDetailUseCase: FetchQuestionDetailUseCase
-    private var mBackPressDispatcher: BackPressDispatcher
     private var questioId: String? = null
     private var mObserver: QuestionDetailViewModelObserver? = null
 
-
-    constructor(
-        mStackoverflowApi: StackoverflowApi,
-        mBackPressDispatcher: BackPressDispatcher
-    ) : super() {
-
-        this.mFetchQuestionDetailUseCase = FetchQuestionDetailUseCase(mStackoverflowApi)
-        this.mBackPressDispatcher = mBackPressDispatcher
+    init {
         mFetchQuestionDetailUseCase.addObserver(this)
     }
 

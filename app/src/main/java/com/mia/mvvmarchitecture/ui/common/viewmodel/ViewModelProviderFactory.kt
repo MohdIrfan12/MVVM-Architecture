@@ -18,14 +18,16 @@ class ViewModelProviderFactory : NewInstanceFactory {
     }
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+
         if (modelClass.isAssignableFrom(QuestionListViewModel::class.java)) {
             return QuestionListViewModel(
-                mControllerCompositionRoot.getStackOverFlowApi(),
+                mControllerCompositionRoot.getUsecaseFactory().getFetchQuestionsListUseCase(),
                 mControllerCompositionRoot.getEventBus()
             ) as T
-        }else if (modelClass.isAssignableFrom(QuestionDetailViewModel::class.java)) {
+
+        } else if (modelClass.isAssignableFrom(QuestionDetailViewModel::class.java)) {
             return QuestionDetailViewModel(
-                mControllerCompositionRoot.getStackOverFlowApi(),
+                mControllerCompositionRoot.getUsecaseFactory().getFetchQuestionsDetailUseCase(),
                 mControllerCompositionRoot.getBackPressDispatcher()
             ) as T
         }

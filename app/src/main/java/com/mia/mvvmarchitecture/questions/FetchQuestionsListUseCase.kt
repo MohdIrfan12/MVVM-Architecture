@@ -1,12 +1,8 @@
 package com.mia.mvvvmcarchitecture.questions
 
+import com.mia.mvvmarchitecture.networking.question.FetchQuestionListEndpoint
 import com.mia.mvvvmcarchitecture.common.observer.BaseObservable
-import com.mia.mvvvmcarchitecture.networking.*
 import com.mia.mvvvmcarchitecture.networking.question.QuestionSchema
-import com.mia.mvvvmcarchitecture.networking.question.QuestionsListSchema
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.ArrayList
 
 
@@ -14,32 +10,24 @@ import java.util.ArrayList
  * Created by Mohd Irfan on 31/12/20.
  *
  */
-class FetchQuestionsListUseCase(private val mStackoverflowApi: StackoverflowApi) :
-    BaseObservable<FetchQuestionsListUseCase.FetchQuestionsListUseCaseListener>() {
+class FetchQuestionsListUseCase(private val endpoint: FetchQuestionListEndpoint) :
+    BaseObservable<FetchQuestionsListUseCase.Listener>() {
 
-    interface FetchQuestionsListUseCaseListener {
-        fun onQuestionDetailFetchFailed()
-        fun onQuestionsListFetched(questions: ArrayList<Question>)
+    interface Listener {
+        fun onQuestionsFetchFailed()
+        fun onQuestionsListFetched(questions: List<Question>)
     }
 
     fun fetchQuestionListAndNotify() {
-        mStackoverflowApi.fetchLastActiveQuestions(Constants.QUESTIONS_LIST_PAGE_SIZE)
-            ?.enqueue(object : Callback<QuestionsListSchema> {
-                override fun onResponse(
-                    call: Call<QuestionsListSchema>,
-                    response: Response<QuestionsListSchema>
-                ) {
-                    if (response.isSuccessful) {
-                        notifySucess(response.body()?.mQuestions)
-                    } else {
-                        notifyFailure()
-                    }
-                }
+        endpoint.fetchQuestions(object : FetchQuestionListEndpoint.Listener {
+            override fun onQuestionsFetchFailed() {
+                notifyFailure()
+            }
 
-                override fun onFailure(call: Call<QuestionsListSchema>, t: Throwable) {
-                    notifyFailure()
-                }
-            })
+            override fun onQuestionsFetched(questions: List<QuestionSchema>?) {
+                notifySucess(questions)
+            }
+        })
     }
 
     private fun notifySucess(mQuestionSchemas: List<QuestionSchema>?) {
@@ -54,10 +42,9 @@ class FetchQuestionsListUseCase(private val mStackoverflowApi: StackoverflowApi)
         }
     }
 
-
     private fun notifyFailure() {
         for (listener in getObserver()) {
-            listener.onQuestionDetailFetchFailed()
+            listener.onQuestionsFetchFailed()
         }
     }
 }

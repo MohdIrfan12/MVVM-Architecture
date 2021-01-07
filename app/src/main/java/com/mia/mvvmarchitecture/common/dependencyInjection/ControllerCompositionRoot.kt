@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import com.mia.mvvmarchitecture.networking.EndpointFactory
+import com.mia.mvvmarchitecture.questions.UsecaseFactory
 import com.mia.mvvvmcarchitecture.common.eventbus.EventBus
 import com.mia.mvvvmcarchitecture.common.permissions.FragmentPermissionsHelper
 import com.mia.mvvvmcarchitecture.networking.StackoverflowApi
@@ -47,6 +49,10 @@ class ControllerCompositionRoot(private val mActivityCompositionRoot: ActivityCo
         return mActivityCompositionRoot.getEventBus()
     }
 
+    fun getActivityPermissionsHelper(): ActivityPermissionsHelper {
+        return mActivityPermissionsHelper
+    }
+
     private fun getFragmentManager(): FragmentManager {
         return getActivity().supportFragmentManager
     }
@@ -58,11 +64,6 @@ class ControllerCompositionRoot(private val mActivityCompositionRoot: ActivityCo
     fun getViewFactory(): ViewFactory {
         return ViewFactory(getLayoutInflator())
     }
-
-    fun getViewModelProviderFactory(): ViewModelProviderFactory {
-        return ViewModelProviderFactory(this)
-    }
-
 
     fun getScreenNavigatior(): ScreenNavigatior {
         return ScreenNavigatior(getFragmentFrameHelper())
@@ -88,15 +89,23 @@ class ControllerCompositionRoot(private val mActivityCompositionRoot: ActivityCo
         return getActivity() as FragmentFrameWrapper
     }
 
-    fun getActivityPermissionsHelper(): ActivityPermissionsHelper {
-        return mActivityPermissionsHelper
-    }
-
     fun getFragmentPermissionsHelper(mFragment: Fragment): FragmentPermissionsHelper {
         if (mFragmentPermissionsHelper == null) {
             mFragmentPermissionsHelper =
                 FragmentPermissionsHelper(mFragment)
         }
         return mFragmentPermissionsHelper!!
+    }
+
+    fun getEndpointFactory(): EndpointFactory {
+        return EndpointFactory(getStackOverFlowApi())
+    }
+
+    fun getUsecaseFactory(): UsecaseFactory {
+        return UsecaseFactory(getEndpointFactory())
+    }
+
+    fun getViewModelProviderFactory(): ViewModelProviderFactory {
+        return ViewModelProviderFactory(this)
     }
 }
