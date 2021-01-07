@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">MVVM Architecture</string>
+    <string name="text_network_call_failed">network call failed</string>
+    <string name="text_questions_list">Questions List</string>
+    <string name="text_questions_detail">Questions detail</string>
+
+    <string name="text_error_promt_title">Network error</string>
+    <string name="text_ok">OK</string>
+    <string name="text_retry">Retry</string>
+
+    <string name="text_permission_granted">Permisssion Granted</string>
+    <string name="text_permission_declined">Permission Declined</string>
+    <string name="text_permission_declined_and_can_not_ask_more">Permission declied and can\'t ask more.</string>
+</resources>
