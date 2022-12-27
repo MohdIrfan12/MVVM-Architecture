@@ -7,6 +7,5 @@ read about it more here,
 https://martinfowler.com/eaaDev/OrganizingPresentations.html#runningExample
 MVVM is just an extension of that Presentation Model.
 
-This project is influenced from concepts Vasiliy Zukanov talks about in his android architecture
-Thought he modeled his architecture around MVC, This is my attempt to model same concepts around MVVM. From my propestive android activities, 
-fragments, adapters are best suitable for MVVM's binders component.
+This project is inspired by notions discussed in Vasiliy Zukanov's Android Architecture series.
+Though he based his design on MVC, here is my attempt to base the same notions on MVVM. According to my preliminary - Android activity, fragments and adapters are most suited for MVVM's binders component.
